@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+.story-script-regular {
+  font-family: "Story Script", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+body {
+  font-family: "Story Script", sans-serif;
+  background: #cc8a8a;
+  color: #333;
+  margin: auto;
+  max-width: 800px;
+}
+
+h1 {
+  text-align: center;
+  color: black;
+}
+
+section {
+  margin: 20px auto;
+  padding: 15px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+form {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.submissionButton {
+  width: 50px;
+}
+
+input, select, button, delete {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.delete {
+  background: #bc1b1b;
+}
+
+.delete:hover {
+  background: #801111 !important;
+}
+
+button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
