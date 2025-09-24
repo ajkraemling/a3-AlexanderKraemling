@@ -1,19 +1,26 @@
 {
-  "name": "",
-  "version": "",
-  "description": "",
+  "name": "a3-alexanderkraemling",
+  "description": "Assignment 3 - Persistence: Two-tier Web Application with Database, Express server, and CSS template\r ===",
   "author": "",
   "scripts": {
     "start": "node server.improved.js"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.13",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "express-openid-connect": "^2.19.2",
     "mime": "^2.6.0",
     "mongodb": "^6.20.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
+    "nodemon": "^3.1.10",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.13"
-  }
+  },
+  "version": "1.0.0",
+  "main": "server.improved.js",
+  "keywords": [],
+  "license": "ISC"
 }

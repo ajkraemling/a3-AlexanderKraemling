@@ -1,52 +1,57 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Couple’s Bucket List</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <meta charset="UTF-8">
+    <title>Checklists</title>
+    <script defer src="js/main.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/28723b3a43.js" crossorigin="anonymous"></script>
 </head>
-<body class="h-screen flex bg-gray-100">
-<aside class="w-64 bg-white shadow-md flex flex-col">
-  <div class="p-4 border-b">
-    <button id="newChecklistBtn"
-            class="w-full bg-blue-500 text-white rounded py-2 hover:bg-blue-600">
-      + New Checklist
-    </button>
-  </div>
-  <ul id="checklistList" class="flex-1 overflow-y-auto p-2 space-y-2">
-  </ul>
-</aside>
-<main class="flex-1 bg-pink-100">
-  <header class="w-full bg-pink-200 shadow-md p-6 text-center">
-    <h1 class="text-4xl font-bold text-pink-800">❤️ Our Bucket List ❤️</h1>
-    <p class="text-pink-700 mt-2">Adventures, dreams, and little things we’ll do together</p>
-  </header>
-  <section class="w-full bg-white shadow-lg rounded-2xl p-6">
-    <h2 class="text-2xl font-semibold text-pink-700 mb-4">Add a New Item</h2>
-    <form id="addForm" class="flex flex-col sm:flex-row gap-4">
-      <input
-              type="text"
-              id="bucketItem"
-              placeholder="e.g., Go stargazing"
-              required
-              class="flex-1 px-4 py-2 border border-pink-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:outline-none"
-      >
-      <button
-              type="submit"
-              class="bg-pink-500 text-white font-semibold px-6 py-2 rounded-xl shadow hover:bg-pink-600 transition"
-      >
-        Add
-      </button>
-    </form>
-  </section>
+<body class="h-screen flex flex-col bg-pink-50">
+<div id="app" class="hidden h-screen flex flex-col">
+    <header class="h-16 bg-pink-300 shadow flex items-center px-6 justify-center">
+        <div class="text-2xl font-bold text-pink-900">
+            <i class="fa-jelly-duo fa-regular fa-heart fa-beat-fade"
+               style="--fa-primary-color: #aa419c; --fa-secondary-color: #f782e7;"></i>
+            Partner Bucket List
+            <i class="fa-jelly-duo fa-regular fa-heart fa-beat-fade"
+               style="--fa-primary-color: #aa419c; --fa-secondary-color: #f782e7;"></i>
+        </div>
+    </header>
 
-  <section class="w-full bg-white shadow-lg rounded-2xl p-6">
-    <h2 class="text-2xl font-semibold text-pink-700 mb-4">Our List</h2>
-    <ul id="bucketList" class="space-y-3"></ul>
-  </section>
-</main>
+    <div class="flex flex-1">
+        <aside class="w-64 bg-pink-200 p-4 flex flex-col">
+            <button id="newChecklistBtn" class="mb-4 bg-pink-400 text-white rounded py-2 hover:bg-pink-500">
+                New Checklist
+            </button>
+            <ul id="checklistList" class="flex-1 overflow-y-auto space-y-2"></ul>
+        </aside>
 
-<script src="js/main.js"></script>
+        <main class="flex-1 flex flex-col p-2 space-y-2">
+            <form id="taskForm" class="flex space-x-2">
+                <input
+                        id="taskInput"
+                        type="text"
+                        placeholder="Enter a new checklist item here!"
+                        class="flex-1 p-1 border border-gray-300 rounded"
+                        required
+                >
+                <button type="submit" class="bg-pink-400 text-white rounded px-4 hover:bg-pink-500">
+                    Submit
+                </button>
+            </form>
+            <div class="flex-1 bg-white rounded p-4 overflow-y-auto shadow">
+                <h2 class="font-semibold mb-2">Active Tasks</h2>
+                <ul id="tasksActive" class="space-y-2"></ul>
+            </div>
+
+            <!-- Completed tasks -->
+            <section class="flex-1 bg-gray-200 rounded p-4 overflow-y-auto shadow">
+                <h2 class="font-semibold mb-2">Completed Tasks</h2>
+                <ul id="tasksCompleted" class="space-y-2"></ul>
+            </section>
+        </main>
+    </div>
+</div>
 </body>
 </html>

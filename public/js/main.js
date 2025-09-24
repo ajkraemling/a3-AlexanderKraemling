@@ -1,72 +1,167 @@
-async function loadData() {
-  const res = await fetch("/data")
-  const { bucketList } = await res.json()
-  updateList(bucketList)
+let checklists = {}; // { name: [ {text, done} ] }
+let currentChecklist = null;
+let currentUser = null; // {_id/sub, name}
+
+// DOM elements
+const checklistList = document.getElementById("checklistList");
+const newChecklistBtn = document.getElementById("newChecklistBtn");
+const taskForm = document.getElementById("taskForm");
+const taskInput = document.getElementById("taskInput");
+const tasksActive = document.getElementById("tasksActive");
+const tasksCompleted = document.getElementById("tasksCompleted");
+const appDiv = document.getElementById("app");
+
+// -------- Initialize Auth0 and get user --------
+async function init() {
+  try {
+    const res = await fetch("/api/me"); // server route returns logged-in user info
+    if (!res.ok) throw new Error("Not logged in");
+
+    const data = await res.json();
+    currentUser = { id: data.user.sub, name: data.user.name || data.user.nickname };
+
+    appDiv.classList.remove("hidden");
+    await loadChecklists();
+  } catch (err) {
+    console.error(err);
+    // redirect to Auth0 login page if not authenticated
+    window.location.href = "/login";
+  }
 }
 
-function updateList(items) {
-  const list = document.getElementById("bucketList")
-  list.innerHTML = ""
+window.onload = init;
 
-  items.forEach((item, idx) => {
-    const li = document.createElement("li")
-    li.className =
-        "flex justify-between items-center bg-pink-100 rounded-xl px-4 py-2 shadow"
+// -------- Checklist / task logic --------
+async function loadChecklists() {
+  if (!currentUser) return;
 
-    li.innerHTML = `
-      <span class="text-pink-800 font-medium">${item}</span>
-      <div class="space-x-2">
-        <button data-index="${idx}" class="complete text-sm text-green-600 hover:text-green-800">✓ Done</button>
-        <button data-index="${idx}" class="delete text-sm text-red-500 hover:text-red-700">Remove</button>
-      </div>
-    `
+  try {
+    const res = await fetch(`/api/checklists`);
+    const data = await res.json();
 
-    list.appendChild(li)
-  })
+    checklists = {};
+    data.forEach(c => {
+      if (c.userId === currentUser.id) {
+        checklists[c.name] = c.tasks;
+      }
+    });
 
-  // hook up delete buttons
-  document.querySelectorAll(".delete").forEach((btn) => {
-    btn.onclick = async function () {
-      const index = parseInt(this.getAttribute("data-index"))
-      const response = await fetch("/delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ index }),
-      })
-      const { bucketList } = await response.json()
-      updateList(bucketList)
+    // select first checklist by default if none selected
+    if (!currentChecklist && Object.keys(checklists).length > 0) {
+      currentChecklist = Object.keys(checklists)[0];
     }
-  })
 
-  // hook up complete buttons
-  document.querySelectorAll(".complete").forEach((btn) => {
-    btn.onclick = function () {
-      const span = this.closest("li").querySelector("span")
-      span.classList.toggle("line-through")
-      span.classList.toggle("opacity-60")
+    renderChecklists();
+    renderTasks();
+  } catch (err) {
+    console.error("Failed to load checklists:", err);
+  }
+}
+
+// Add a new checklist
+newChecklistBtn.addEventListener("click", async () => {
+  const name = prompt("Enter checklist name:");
+  if (!name) return;
+  if (checklists[name]) return alert("Checklist already exists");
+
+  try {
+    const res = await fetch("/api/checklists", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name })
+    });
+    const data = await res.json();
+    if (data.userId !== currentUser.id) return; // only add if it matches current user
+
+    checklists[data.name] = data.tasks;
+    currentChecklist = data.name;
+    renderChecklists();
+    renderTasks();
+  } catch (err) {
+    console.error("Failed to create checklist:", err);
+  }
+});
+
+// Render sidebar checklists
+function renderChecklists() {
+  checklistList.innerHTML = "";
+  Object.keys(checklists).forEach(name => {
+    const li = document.createElement("li");
+    li.textContent = name;
+    li.className = `cursor-pointer p-2 rounded ${name === currentChecklist ? "bg-pink-300 font-bold" : "hover:bg-pink-100"}`;
+    li.onclick = () => {
+      currentChecklist = name;
+      renderChecklists();
+      renderTasks();
+    };
+    checklistList.appendChild(li);
+  });
+}
+
+// Add a task
+taskForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!currentChecklist) return alert("Create or select a checklist first.");
+  const text = taskInput.value.trim();
+  if (!text) return;
+
+  try {
+    const res = await fetch(`/api/checklists/${currentChecklist}/tasks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    });
+    const data = await res.json();
+    checklists[data.name] = data.tasks;
+    taskInput.value = "";
+    renderTasks();
+  } catch (err) {
+    console.error("Failed to add task:", err);
+  }
+});
+
+// Toggle task done/undone
+async function toggleTask(index) {
+  try {
+    const res = await fetch(`/api/checklists/${currentChecklist}/tasks/${index}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    });
+    const data = await res.json();
+    checklists[data.name] = data.tasks;
+    renderTasks();
+  } catch (err) {
+    console.error("Failed to toggle task:", err);
+  }
+}
+
+// Render tasks
+function renderTasks() {
+  tasksActive.innerHTML = "";
+  tasksCompleted.innerHTML = "";
+  if (!currentChecklist) return;
+
+  checklists[currentChecklist].forEach((task, index) => {
+    const li = document.createElement("li");
+    li.className = "flex items-center space-x-2";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.done;
+    checkbox.onchange = () => toggleTask(index);
+
+    const span = document.createElement("span");
+    span.textContent = task.text;
+    if (task.done) span.className = "line-through text-gray-600";
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
+
+    if (task.done) {
+      tasksCompleted.appendChild(li);
+    } else {
+      tasksActive.appendChild(li);
     }
-  })
-}
-
-async function addItem(event) {
-  event.preventDefault()
-
-  const input = document.getElementById("bucketItem")
-  const value = input.value.trim()
-  if (!value) return
-
-  const response = await fetch("/add", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ item: value }),
-  })
-
-  const { bucketList } = await response.json()
-  updateList(bucketList)
-  input.value = ""
-}
-
-window.onload = function () {
-  loadData()
-  document.getElementById("addForm").onsubmit = addItem
+  });
 }
