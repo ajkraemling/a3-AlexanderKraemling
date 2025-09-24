@@ -9,13 +9,25 @@
 </head>
 <body class="h-screen flex flex-col bg-pink-50">
 <div id="app" class="hidden h-screen flex flex-col">
-    <header class="h-16 bg-pink-300 shadow flex items-center px-6 justify-center">
-        <div class="text-2xl font-bold text-pink-900">
+    <header class="h-16 bg-pink-300 shadow flex items-center justify-between px-6">
+        <div class="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-pink-900">
             <i class="fa-jelly-duo fa-regular fa-heart fa-beat-fade"
                style="--fa-primary-color: #aa419c; --fa-secondary-color: #f782e7;"></i>
             Partner Bucket List
             <i class="fa-jelly-duo fa-regular fa-heart fa-beat-fade"
                style="--fa-primary-color: #aa419c; --fa-secondary-color: #f782e7;"></i>
+        </div>
+        <div class="ml-auto relative">
+            <button id="userMenuButton" class="flex shadow items-center space-x-2 rounded bg-pink-200 hover:bg-pink-300 rounded-full h-[50px] w-[50px] justify-center">
+                <i class="fa-solid fa-user text-3xl text-pink-900"></i>
+            </button>
+
+            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg border">
+                <div class="px-4 py-2 text-sm text-gray-700 border-b" id="username">Loading...</div>
+                <button id="logoutButton" class="w-full text-left px-4 py-2 text-sm text-pink-600 hover:bg-pink-100">
+                    Sign Out
+                </button>
+            </div>
         </div>
     </header>
 
@@ -32,7 +44,7 @@
                 <input
                         id="taskInput"
                         type="text"
-                        placeholder="Enter a new checklist item here!"
+                        placeholder="Add a new checklist item"
                         class="flex-1 p-1 border border-gray-300 rounded"
                         required
                 >
@@ -45,7 +57,6 @@
                 <ul id="tasksActive" class="space-y-2"></ul>
             </div>
 
-            <!-- Completed tasks -->
             <section class="flex-1 bg-gray-200 rounded p-4 overflow-y-auto shadow">
                 <h2 class="font-semibold mb-2">Completed Tasks</h2>
                 <ul id="tasksCompleted" class="space-y-2"></ul>
