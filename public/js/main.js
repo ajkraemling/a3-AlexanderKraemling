@@ -86,16 +86,69 @@ function renderChecklists() {
     checklistList.innerHTML = "";
     Object.keys(checklists).forEach(name => {
         const li = document.createElement("li");
-        li.textContent = name;
-        li.className = `cursor-pointer p-2 rounded hover:shadow hover:bg-pink-300 ${name === currentChecklist ? "bg-pink-300 font-bold" : "hover:bg-pink-100"}`;
-        li.onclick = () => {
+        li.className = `flex items-center justify-between cursor-pointer p-2 rounded 
+                        ${name === currentChecklist ? "bg-pink-300 font-bold" : "hover:bg-pink-100"}`;
+
+        const span = document.createElement("span");
+        span.textContent = name;
+        span.onclick = () => {
             currentChecklist = name;
             renderChecklists();
             renderTasks();
         };
+
+        // Edit button
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "✏️";
+        editBtn.className = "ml-2 text-blue-600 hover:text-blue-800";
+        editBtn.onclick = async (e) => {
+            e.stopPropagation();
+            const newName = prompt("Rename checklist:", name);
+            if (!newName) return;
+            try {
+                const res = await fetch(`/api/checklists/${name}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ newName })
+                });
+                const data = await res.json();
+                delete checklists[name];
+                checklists[data.name] = data.tasks;
+                currentChecklist = data.name;
+                renderChecklists();
+                renderTasks();
+            } catch (err) {
+                console.error("Failed to rename checklist:", err);
+            }
+        };
+
+        // Delete button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "🗑️";
+        deleteBtn.className = "ml-2 text-red-600 hover:text-red-800";
+        deleteBtn.onclick = async (e) => {
+            e.stopPropagation();
+            if (!confirm(`Delete checklist "${name}"?`)) return;
+            try {
+                await fetch(`/api/checklists/${name}`, { method: "DELETE" });
+                delete checklists[name];
+                if (currentChecklist === name) {
+                    currentChecklist = Object.keys(checklists)[0] || null;
+                }
+                renderChecklists();
+                renderTasks();
+            } catch (err) {
+                console.error("Failed to delete checklist:", err);
+            }
+        };
+
+        li.appendChild(span);
+        li.appendChild(editBtn);
+        li.appendChild(deleteBtn);
         checklistList.appendChild(li);
     });
 }
+
 
 // Add a task
 taskForm.addEventListener("submit", async e => {
@@ -134,7 +187,6 @@ async function toggleTask(index) {
     }
 }
 
-// Render tasks
 function renderTasks() {
     tasksActive.innerHTML = "";
     tasksCompleted.innerHTML = "";
@@ -153,8 +205,29 @@ function renderTasks() {
         span.textContent = task.text;
         if (task.done) span.className = "line-through text-gray-600";
 
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "✏️";
+        editBtn.className = "ml-2 text-sm text-blue-600 hover:text-blue-800";
+        editBtn.onclick = async () => {
+            const newText = prompt("Edit task:", task.text);
+            if (!newText) return;
+            try {
+                const res = await fetch(`/api/checklists/${currentChecklist}/tasks/${index}/edit`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: newText })
+                });
+                const data = await res.json();
+                checklists[data.name] = data.tasks;
+                renderTasks();
+            } catch (err) {
+                console.error("Failed to edit task:", err);
+            }
+        };
+
         li.appendChild(checkbox);
         li.appendChild(span);
+        li.appendChild(editBtn);
 
         if (task.done) {
             tasksCompleted.appendChild(li);
@@ -163,7 +236,6 @@ function renderTasks() {
         }
     });
 }
-
 
 const userMenuButton = document.getElementById("userMenuButton");
 const userMenu = document.getElementById("userMenu");

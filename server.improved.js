@@ -100,6 +100,64 @@ app.post("/api/checklists/:name/tasks", requiresAuth(), async (req, res) => {
   }
 });
 
+// Update checklist name
+app.put("/api/checklists/:name", requiresAuth(), async (req, res) => {
+  const { name } = req.params;
+  const { newName } = req.body;
+  const userId = req.oidc.user.sub;
+
+  if (!newName) return res.status(400).json({ error: "New name required" });
+
+  try {
+    await checklistsCollection.updateOne(
+        { name, userId },
+        { $set: { name: newName } }
+    );
+    const updated = await checklistsCollection.findOne({ name: newName, userId });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete checklist
+app.delete("/api/checklists/:name", requiresAuth(), async (req, res) => {
+  const { name } = req.params;
+  const userId = req.oidc.user.sub;
+
+  try {
+    await checklistsCollection.deleteOne({ name, userId });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Edit a task’s text
+app.put("/api/checklists/:name/tasks/:index/edit", requiresAuth(), async (req, res) => {
+  const { name, index } = req.params;
+  const { text } = req.body;
+  const userId = req.oidc.user.sub;
+
+  if (!text) return res.status(400).json({ error: "Task text required" });
+
+  try {
+    const checklist = await checklistsCollection.findOne({ name, userId });
+    if (!checklist || !checklist.tasks[index]) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    checklist.tasks[index].text = text;
+    await checklistsCollection.updateOne(
+        { name, userId },
+        { $set: { tasks: checklist.tasks } }
+    );
+    res.json(checklist);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Toggle task done/undone
 app.put("/api/checklists/:name/tasks/:index", requiresAuth(), async (req, res) => {
   const { name, index } = req.params;
