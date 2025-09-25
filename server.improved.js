@@ -121,6 +121,6 @@ app.put("/api/checklists/:name/tasks/:index", requiresAuth(), async (req, res) =
 });
 
 // --- Start server ---
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server running on port ${port}`);
 });
