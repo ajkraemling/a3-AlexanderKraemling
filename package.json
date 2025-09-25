@@ -3,7 +3,7 @@
   "description": "Assignment 3 - Persistence: Two-tier Web Application with Database, Express server, and CSS template\r ===",
   "author": "",
   "scripts": {
-    "start": "node server.improved.js"
+    "start": "node api/index.js"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.13",
@@ -20,7 +20,7 @@
     "tailwindcss": "^4.1.13"
   },
   "version": "1.0.0",
-  "main": "server.improved.js",
+  "main": "api/index.js",
   "keywords": [],
   "license": "ISC"
 }

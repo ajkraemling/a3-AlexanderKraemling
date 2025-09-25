@@ -58,7 +58,6 @@ async function loadChecklists() {
     }
 }
 
-// Add a new checklist
 newChecklistBtn.addEventListener("click", async () => {
     const name = prompt("Enter checklist name:");
     if (!name) return;
