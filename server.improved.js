@@ -12,7 +12,7 @@ const config = {
   authRequired: true,      // automatically redirects to login
   auth0Logout: true,
   secret: process.env.SECRET,
-  baseURL: process.env.BASE_URL || 'http://localhost:3000',
+  baseURL: process.env.BASE_URL,
   clientID: process.env.AUTH0_CLIENT_ID,
   issuerBaseURL: process.env.AUTH0_DOMAIN
 };
@@ -120,7 +120,7 @@ app.put("/api/checklists/:name/tasks/:index", requiresAuth(), async (req, res) =
   }
 });
 
-// // --- Start server ---
-// app.listen(port, () => {
-//   console.log(`Server running at http://localhost:${port}/`);
-// });
+// --- Start server ---
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
+});
