@@ -104,7 +104,7 @@ function renderChecklists() {
 
         // Edit button
         const editBtn = document.createElement("button");
-        editBtn.innerHTML = `<i class="fa-solid fa-pen text-blue-600 hover:text-blue-800"></i>`;
+        editBtn.innerHTML = `<i class="fa-solid fa-pen text-red-200 hover:text-red-400"></i>`;
         editBtn.onclick = async (e) => {
             e.stopPropagation(); // prevent selecting checklist
             const newName = prompt("Rename checklist:", name);
@@ -128,7 +128,7 @@ function renderChecklists() {
 
         // Delete button
         const deleteBtn = document.createElement("button");
-        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-red-600 hover:text-red-800"></i>`;
+        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-red-200 hover:text-red-400"></i>`;
         deleteBtn.onclick = async (e) => {
             e.stopPropagation(); // prevent selecting checklist
             if (!confirm(`Delete checklist "${name}"?`)) return;
@@ -198,10 +198,10 @@ function renderTasks() {
 
     checklists[currentChecklist].forEach((task, index) => {
         const li = document.createElement("li");
-        li.className = "flex items-center justify-between border-b py-1";
+        li.className = "flex items-center justify-between space-x-2";
 
-        const leftSide = document.createElement("div");
-        leftSide.className = "flex items-center gap-2";
+        const leftDiv = document.createElement("div");
+        leftDiv.className = "flex items-center space-x-2";
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -212,15 +212,15 @@ function renderTasks() {
         span.textContent = task.text;
         if (task.done) span.className = "line-through text-gray-600";
 
-        leftSide.appendChild(checkbox);
-        leftSide.appendChild(span);
+        leftDiv.appendChild(checkbox);
+        leftDiv.appendChild(span);
 
-        // Button container (right side)
         const btnContainer = document.createElement("div");
         btnContainer.className = "flex gap-2";
 
+        // Edit button
         const editBtn = document.createElement("button");
-        editBtn.innerHTML = `<i class="fa-solid fa-pen text-blue-600 hover:text-blue-800"></i>`;
+        editBtn.innerHTML = `<i class="fa-solid fa-pen text-red-200 hover:text-red-400"></i>`;
         editBtn.onclick = async () => {
             const newText = prompt("Edit task:", task.text);
             if (!newText) return;
@@ -238,10 +238,11 @@ function renderTasks() {
             }
         };
 
+        // Delete button
         const deleteBtn = document.createElement("button");
-        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-red-600 hover:text-red-800"></i>`;
+        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-red-200 hover:text-red-400"></i>`;
         deleteBtn.onclick = async () => {
-            if (!confirm(`Delete task "${task.text}"?`)) return;
+            if (!confirm("Delete this task?")) return;
             try {
                 const res = await fetch(`/api/checklists/${currentChecklist}/tasks/${index}`, {
                     method: "DELETE"
@@ -257,7 +258,7 @@ function renderTasks() {
         btnContainer.appendChild(editBtn);
         btnContainer.appendChild(deleteBtn);
 
-        li.appendChild(leftSide);
+        li.appendChild(leftDiv);
         li.appendChild(btnContainer);
 
         if (task.done) {
@@ -267,6 +268,7 @@ function renderTasks() {
         }
     });
 }
+
 
 
 const userMenuButton = document.getElementById("userMenuButton");

@@ -158,6 +158,27 @@ app.put("/api/checklists/:name/tasks/:index/edit", requiresAuth(), async (req, r
   }
 });
 
+// Delete a task
+app.delete("/api/checklists/:name/tasks/:index", requiresAuth(), async (req, res) => {
+  const { name, index } = req.params;
+
+  try {
+    const userId = req.oidc.user.sub;
+    const checklist = await checklistsCollection.findOne({ name, userId });
+    if (!checklist || !checklist.tasks[index]) return res.status(404).json({ error: "Task not found" });
+
+    checklist.tasks.splice(index, 1);
+    await checklistsCollection.updateOne(
+        { name, userId },
+        { $set: { tasks: checklist.tasks } }
+    );
+    res.json(checklist);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // Toggle task done/undone
 app.put("/api/checklists/:name/tasks/:index", requiresAuth(), async (req, res) => {
   const { name, index } = req.params;
