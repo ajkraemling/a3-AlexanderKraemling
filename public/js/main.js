@@ -104,7 +104,7 @@ function renderChecklists() {
 
         // Edit button
         const editBtn = document.createElement("button");
-        editBtn.innerHTML = `<i class="fa-solid fa-pen text-red-200 hover:text-red-400"></i>`;
+        editBtn.innerHTML = `<i class="fa-solid fa-pen text-pink-200 hover:text-pink-400"></i>`;
         editBtn.onclick = async (e) => {
             e.stopPropagation(); // prevent selecting checklist
             const newName = prompt("Rename checklist:", name);
@@ -128,7 +128,7 @@ function renderChecklists() {
 
         // Delete button
         const deleteBtn = document.createElement("button");
-        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-red-200 hover:text-red-400"></i>`;
+        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-pink-200 hover:text-pink-400"></i>`;
         deleteBtn.onclick = async (e) => {
             e.stopPropagation(); // prevent selecting checklist
             if (!confirm(`Delete checklist "${name}"?`)) return;
@@ -220,7 +220,7 @@ function renderTasks() {
 
         // Edit button
         const editBtn = document.createElement("button");
-        editBtn.innerHTML = `<i class="fa-solid fa-pen text-red-200 hover:text-red-400"></i>`;
+        editBtn.innerHTML = `<i class="fa-solid fa-pen text-black hover:text-gray"></i>`;
         editBtn.onclick = async () => {
             const newText = prompt("Edit task:", task.text);
             if (!newText) return;
@@ -240,7 +240,7 @@ function renderTasks() {
 
         // Delete button
         const deleteBtn = document.createElement("button");
-        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-red-200 hover:text-red-400"></i>`;
+        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-black hover:text-gray"></i>`;
         deleteBtn.onclick = async () => {
             if (!confirm("Delete this task?")) return;
             try {
