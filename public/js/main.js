@@ -105,6 +105,8 @@ function renderChecklists() {
         // Edit button
         const editBtn = document.createElement("button");
         editBtn.innerHTML = `<i class="fa-solid fa-pen text-pink-200 hover:text-pink-400"></i>`;
+        editBtn.setAttribute("aria-label", `Edit task`);
+        editBtn.setAttribute("aria-label", `Edit checklist`);
         editBtn.onclick = async (e) => {
             e.stopPropagation(); // prevent selecting checklist
             const newName = prompt("Rename checklist:", name);
@@ -129,6 +131,8 @@ function renderChecklists() {
         // Delete button
         const deleteBtn = document.createElement("button");
         deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-pink-200 hover:text-pink-400"></i>`;
+        deleteBtn.setAttribute("aria-label", `Delete checklist`);
+        deleteBtn.setAttribute("aria-label", `Delete task`);
         deleteBtn.onclick = async (e) => {
             e.stopPropagation(); // prevent selecting checklist
             if (!confirm(`Delete checklist "${name}"?`)) return;
@@ -272,7 +276,9 @@ function renderTasks() {
 
 
 const userMenuButton = document.getElementById("userMenuButton");
+userMenuButton.setAttribute("aria-label", "User menu button");
 const userMenu = document.getElementById("userMenu");
+userMenu.setAttribute("aria-label", "User menu");
 
 userMenuButton.addEventListener("click", () => {
     userMenu.classList.toggle("hidden");
@@ -286,6 +292,8 @@ fetch("/api/me")
             document.getElementById("username").textContent = data.user.name || data.user.email;
         }
     });
+
+document.getElementById("logoutButton").setAttribute("aria-label", `Logout`);
 
 document.getElementById("logoutButton").addEventListener("click", () => {
     window.location.href = "/logout";

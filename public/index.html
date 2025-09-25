@@ -41,6 +41,7 @@
 
         <main class="flex-1 flex flex-col p-2 space-y-2">
             <form id="taskForm" class="flex space-x-2">
+                <label for="taskInput" class="sr-only">Add a new checklist item</label>
                 <input
                         id="taskInput"
                         type="text"
@@ -48,7 +49,7 @@
                         class="flex-1 p-1 border border-gray-300 rounded"
                         required
                 >
-                <button type="submit" class="bg-pink-400 text-white rounded px-4 hover:bg-pink-500">
+                <button type="submit" class="bg-pink-400 text-white rounded px-4 hover:bg-pink-500" aria-label="Add task">
                     Submit
                 </button>
             </form>
