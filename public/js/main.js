@@ -81,28 +81,32 @@ newChecklistBtn.addEventListener("click", async () => {
     }
 });
 
-// Render sidebar checklists
 function renderChecklists() {
     checklistList.innerHTML = "";
     Object.keys(checklists).forEach(name => {
         const li = document.createElement("li");
-        li.className = `flex items-center justify-between cursor-pointer p-2 rounded 
+        li.className = `flex items-center justify-between p-2 rounded cursor-pointer
                         ${name === currentChecklist ? "bg-pink-300 font-bold" : "hover:bg-pink-100"}`;
 
-        const span = document.createElement("span");
-        span.textContent = name;
-        span.onclick = () => {
+        // Select checklist when clicking anywhere in the li
+        li.onclick = () => {
             currentChecklist = name;
             renderChecklists();
             renderTasks();
         };
 
+        const span = document.createElement("span");
+        span.textContent = name;
+
+        // Button container (right aligned)
+        const btnContainer = document.createElement("div");
+        btnContainer.className = "flex gap-2";
+
         // Edit button
         const editBtn = document.createElement("button");
-        editBtn.textContent = "✏️";
-        editBtn.className = "ml-2 text-blue-600 hover:text-blue-800";
+        editBtn.innerHTML = `<i class="fa-solid fa-pen text-blue-600 hover:text-blue-800"></i>`;
         editBtn.onclick = async (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // prevent selecting checklist
             const newName = prompt("Rename checklist:", name);
             if (!newName) return;
             try {
@@ -124,10 +128,9 @@ function renderChecklists() {
 
         // Delete button
         const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "🗑️";
-        deleteBtn.className = "ml-2 text-red-600 hover:text-red-800";
+        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-red-600 hover:text-red-800"></i>`;
         deleteBtn.onclick = async (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // prevent selecting checklist
             if (!confirm(`Delete checklist "${name}"?`)) return;
             try {
                 await fetch(`/api/checklists/${name}`, { method: "DELETE" });
@@ -142,13 +145,14 @@ function renderChecklists() {
             }
         };
 
+        btnContainer.appendChild(editBtn);
+        btnContainer.appendChild(deleteBtn);
+
         li.appendChild(span);
-        li.appendChild(editBtn);
-        li.appendChild(deleteBtn);
+        li.appendChild(btnContainer);
         checklistList.appendChild(li);
     });
 }
-
 
 // Add a task
 taskForm.addEventListener("submit", async e => {
@@ -194,7 +198,10 @@ function renderTasks() {
 
     checklists[currentChecklist].forEach((task, index) => {
         const li = document.createElement("li");
-        li.className = "flex items-center space-x-2";
+        li.className = "flex items-center justify-between border-b py-1";
+
+        const leftSide = document.createElement("div");
+        leftSide.className = "flex items-center gap-2";
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -205,9 +212,15 @@ function renderTasks() {
         span.textContent = task.text;
         if (task.done) span.className = "line-through text-gray-600";
 
+        leftSide.appendChild(checkbox);
+        leftSide.appendChild(span);
+
+        // Button container (right side)
+        const btnContainer = document.createElement("div");
+        btnContainer.className = "flex gap-2";
+
         const editBtn = document.createElement("button");
-        editBtn.textContent = "✏️";
-        editBtn.className = "ml-2 text-sm text-blue-600 hover:text-blue-800";
+        editBtn.innerHTML = `<i class="fa-solid fa-pen text-blue-600 hover:text-blue-800"></i>`;
         editBtn.onclick = async () => {
             const newText = prompt("Edit task:", task.text);
             if (!newText) return;
@@ -225,9 +238,27 @@ function renderTasks() {
             }
         };
 
-        li.appendChild(checkbox);
-        li.appendChild(span);
-        li.appendChild(editBtn);
+        const deleteBtn = document.createElement("button");
+        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-red-600 hover:text-red-800"></i>`;
+        deleteBtn.onclick = async () => {
+            if (!confirm(`Delete task "${task.text}"?`)) return;
+            try {
+                const res = await fetch(`/api/checklists/${currentChecklist}/tasks/${index}`, {
+                    method: "DELETE"
+                });
+                const data = await res.json();
+                checklists[data.name] = data.tasks;
+                renderTasks();
+            } catch (err) {
+                console.error("Failed to delete task:", err);
+            }
+        };
+
+        btnContainer.appendChild(editBtn);
+        btnContainer.appendChild(deleteBtn);
+
+        li.appendChild(leftSide);
+        li.appendChild(btnContainer);
 
         if (task.done) {
             tasksCompleted.appendChild(li);
@@ -236,6 +267,7 @@ function renderTasks() {
         }
     });
 }
+
 
 const userMenuButton = document.getElementById("userMenuButton");
 const userMenu = document.getElementById("userMenu");
