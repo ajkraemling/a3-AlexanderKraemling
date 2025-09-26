@@ -209,6 +209,7 @@ function renderTasks() {
         checkbox.type = "checkbox";
         checkbox.checked = task.done;
         checkbox.onchange = () => toggleTask(index);
+        checkbox.setAttribute("aria-label", `Checklist Item`);
 
         const span = document.createElement("span");
         span.textContent = task.text;
