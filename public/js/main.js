@@ -104,8 +104,7 @@ function renderChecklists() {
 
         // Edit button
         const editBtn = document.createElement("button");
-        editBtn.innerHTML = `<i class="fa-solid fa-pen text-pink-200 hover:text-pink-400"></i>`;
-        editBtn.setAttribute("aria-label", `Edit task`);
+        editBtn.innerHTML = `<i id="Edit Button" class="fa-solid fa-pen text-pink-200 hover:text-pink-400"></i>`;
         editBtn.setAttribute("aria-label", `Edit checklist`);
         editBtn.onclick = async (e) => {
             e.stopPropagation(); // prevent selecting checklist
@@ -130,9 +129,8 @@ function renderChecklists() {
 
         // Delete button
         const deleteBtn = document.createElement("button");
-        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-pink-200 hover:text-pink-400"></i>`;
+        deleteBtn.innerHTML = `<i id="Delete Button" class="fa-solid fa-trash text-pink-200 hover:text-pink-400"></i>`;
         deleteBtn.setAttribute("aria-label", `Delete checklist`);
-        deleteBtn.setAttribute("aria-label", `Delete task`);
         deleteBtn.onclick = async (e) => {
             e.stopPropagation(); // prevent selecting checklist
             if (!confirm(`Delete checklist "${name}"?`)) return;
@@ -224,7 +222,8 @@ function renderTasks() {
 
         // Edit button
         const editBtn = document.createElement("button");
-        editBtn.innerHTML = `<i class="fa-solid fa-pen text-black hover:text-gray"></i>`;
+        editBtn.innerHTML = `<i id="Edit Button" class="fa-solid fa-pen text-black hover:text-gray"></i>`;
+        editBtn.setAttribute("aria-label", `Edit task`);
         editBtn.onclick = async () => {
             const newText = prompt("Edit task:", task.text);
             if (!newText) return;
@@ -244,7 +243,8 @@ function renderTasks() {
 
         // Delete button
         const deleteBtn = document.createElement("button");
-        deleteBtn.innerHTML = `<i class="fa-solid fa-trash text-black hover:text-gray"></i>`;
+        deleteBtn.innerHTML = `<i id="Delete Button" class="fa-solid fa-trash text-black hover:text-gray"></i>`;
+        deleteBtn.setAttribute("aria-label", `Delete task`);
         deleteBtn.onclick = async () => {
             if (!confirm("Delete this task?")) return;
             try {
